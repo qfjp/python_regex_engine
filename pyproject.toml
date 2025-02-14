@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "python-regex-engine"
+version = "0.1.0"
+description = "A regular expression engine following Zenimax presentation"
+authors = ["qfjp <qfjp@users.noreply.github.com>"]
+license = "Proprietary"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+lark = "^1.2.2"
+jedi = "^0.19.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
