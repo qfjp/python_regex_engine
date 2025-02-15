@@ -1,14 +1,17 @@
-from lark import Lark, Transformer, Tree, Token
 from typing import Callable
-from automata import Nfa, ALPHABET
+
+from lark import Lark, Token, Transformer, Tree
+
+from python_regex_engine.automata import ALPHABET, Nfa
+from python_regex_engine.monoids import Set, Sum
 
 state_index = 1
 
 
-def fresh_state_closure() -> Callable[[], int]:
-    state_index = 0
+def fresh_state_closure() -> Callable[[], Sum]:
+    state_index = Sum(0)
 
-    def increment() -> int:
+    def increment() -> Sum:
         nonlocal state_index
         state_index += 1
         return state_index
@@ -58,9 +61,9 @@ regex_lexer = Lark(
 )
 
 
-def nodes_to_nfas(*items: Tree[Nfa]) -> list[Nfa]:
-    children: list[Nfa | Tree[Nfa]] = [t.children[0] for t in items]
-    nfas: list[Nfa] = []
+def nodes_to_nfas(*items: Tree[Nfa[Sum]]) -> list[Nfa[Sum]]:
+    children: list[Nfa[Sum] | Tree[Nfa[Sum]]] = [t.children[0] for t in items]
+    nfas: list[Nfa[Sum]] = []
     for mayb_tree in children:
         while isinstance(mayb_tree, Tree):
             assert len(mayb_tree.children) == 1
@@ -70,7 +73,7 @@ def nodes_to_nfas(*items: Tree[Nfa]) -> list[Nfa]:
 
 
 class RegexParser(Transformer):
-    def regex_kleene(self, items: list[Tree[Nfa]]) -> Nfa:
+    def regex_kleene(self, items: list[Tree[Nfa[Sum]]]) -> Nfa[Sum]:
         assert len(items) == 1
         sub_nfa = nodes_to_nfas(*items)[0]
         assert len(sub_nfa.final_set) == 1
@@ -80,18 +83,18 @@ class RegexParser(Transformer):
         new_end = fresh_state()
 
         trans_fn = sub_nfa.trans_fn.copy()
-        trans_fn.update({(new_start, ""): set([new_end, sub_nfa.start])})
-        trans_fn.update({(sub_nfa_end, ""): set([sub_nfa.start, new_end])})
-        result = Nfa(
+        trans_fn.update({(new_start, ""): Set([new_end, sub_nfa.start])})
+        trans_fn.update({(sub_nfa_end, ""): Set([sub_nfa.start, new_end])})
+        result: Nfa[Sum] = Nfa(
             new_start,
-            sub_nfa.state_set.union(set([new_start, new_end])),
+            sub_nfa.state_set.union(Set({new_start, new_end})),
             sub_nfa.alphabet,
             trans_fn,
-            set([new_end]),
+            Set({new_end}),
         )
         return result
 
-    def regex_concat(self, items: list[Tree[Nfa]]) -> Nfa:
+    def regex_concat(self, items: list[Tree[Nfa[Sum]]]) -> Nfa[Sum]:
         assert len(items) == 2
         left, right = nodes_to_nfas(*items)
         assert len(left.final_set) == 1
@@ -102,19 +105,19 @@ class RegexParser(Transformer):
 
         trans_fn = left.trans_fn.copy()
         trans_fn.update(right.trans_fn)
-        trans_fn.update({(new_start, ""): set([left.start])})
-        trans_fn.update({(left.final_set.pop(), ""): set([right.start])})
-        trans_fn.update({(right.final_set.pop(), ""): set([new_end])})
-        result = Nfa(
+        trans_fn.update({(new_start, ""): Set([left.start])})
+        trans_fn.update({(left.final_set.pop(), ""): Set([right.start])})
+        trans_fn.update({(right.final_set.pop(), ""): Set([new_end])})
+        result: Nfa[Sum] = Nfa(
             new_start,
-            right.state_set.union(left.state_set).union(set([new_start, new_end])),
+            right.state_set.union(left.state_set).union(Set({new_start, new_end})),
             left.alphabet,
             trans_fn,
-            set([new_end]),
+            Set([new_end]),
         )
         return result
 
-    def regex_or(self, items: list[Tree[Nfa]]) -> Nfa:
+    def regex_or(self, items: list[Tree[Nfa[Sum]]]) -> Nfa[Sum]:
         assert len(items) == 2
         left, right = nodes_to_nfas(*items)
         assert len(left.final_set) == 1
@@ -123,29 +126,31 @@ class RegexParser(Transformer):
         new_start = fresh_state()
         new_end = fresh_state()
         new_state_set = right.state_set.union(left.state_set).union(
-            set({new_start, new_end})
+            Set({new_start, new_end})
         )
 
         trans_fn = left.trans_fn.copy()
         trans_fn.update(right.trans_fn)
-        trans_fn.update({(new_start, ""): set([right.start, left.start])})
-        trans_fn.update({(right.final_set.pop(), ""): set([new_end])})
-        trans_fn.update({(left.final_set.pop(), ""): set([new_end])})
-        result = Nfa(
+        trans_fn.update({(new_start, ""): Set([right.start, left.start])})
+        trans_fn.update({(right.final_set.pop(), ""): Set([new_end])})
+        trans_fn.update({(left.final_set.pop(), ""): Set([new_end])})
+        result: Nfa[Sum] = Nfa(
             new_start,
             new_state_set,
             left.alphabet,
             trans_fn,
-            set([new_end]),
+            Set([new_end]),
         )
         return result
 
-    def primitive(self, items: list[Token]) -> Nfa:
+    def primitive(self, items: list[Token]) -> Nfa[Sum]:
         # 1 -a-> 2
         states = [fresh_state(), fresh_state()]
         char = items[0][0]
-        trans_fn: dict[tuple[int | str, str], set[int | str]] = {
-            (states[0], char): set([states[1]])
+        trans_fn: dict[tuple[Sum, str], Set[Sum]] = {
+            (states[0], char): Set({states[1]})
         }
-        result = Nfa(states[0], set(states), ALPHABET, trans_fn, set([states[1]]))
+        result: Nfa[Sum] = Nfa(
+            states[0], Set(states), ALPHABET, trans_fn, Set({states[1]})
+        )
         return result

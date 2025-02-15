@@ -10,6 +10,8 @@ readme = "README.md"
 python = "^3.13"
 lark = "^1.2.2"
 jedi = "^0.19.2"
+mypy = "^1.15.0"
+pymonad = "^2.4.0"
 
 
 [build-system]
