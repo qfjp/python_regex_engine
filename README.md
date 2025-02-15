@@ -55,7 +55,7 @@ this parses a regular expression with the `parser` module. Using
 syntax directed translation, the regular expression is converted to an
 NFA with the following rules:
 
-$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right> \text{where:}$
+$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right> \text{ where:}$
 
 * $\mathit q_0$ *is the* start state,
 * $\mathit \Sigma$ *is the* alphabet,
