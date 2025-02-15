@@ -25,11 +25,7 @@ regex_lexer = Lark(
     r"""
     regex: primitive
          | exp
-         // | "(" regex ")"
          // | "[" range "]"
-         // | regex_or
-         // | regex_concat
-         // | regex_kleene
 
     exp: regex_or
        | term
