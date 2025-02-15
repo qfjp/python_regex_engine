@@ -1,5 +1,27 @@
 # Example Regex Engine
 
+## Roadmap
+
+* Regex
+  - [X] Parse
+  - [X] Regex $\rightarrow$ NFA
+  - [ ] Equivalence Check
+  - [ ] Negation (Depends on $\varepsilon$-NFA $\rightarrow$ DFA)
+* NFA
+  - [ ] $\varepsilon$-NFA $\rightarrow$ regex
+  - [ ] $\varepsilon$-NFA $\rightarrow$ DFA
+  - [ ] Optional/low priority
+    + [ ] Parse
+    + [ ] $\varepsilon$-NFA $\rightarrow$ NFA
+    + [ ] Equivalence Check
+* DFA
+  - [ ] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
+  - [ ] Negation
+  - [ ] Minimization
+  - [ ] Optional/low priority
+    + [ ] Parse
+    + [ ] Equivalence Check
+
 ## Install & Run
 
 Use `poetry` to create a virtualenv and download all dependencies:
