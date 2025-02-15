@@ -58,19 +58,27 @@ regex_lexer = Lark(
 )
 
 
+def nodes_to_nfas(*items: Tree[Nfa]) -> list[Nfa]:
+    children: list[Nfa | Tree[Nfa]] = [t.children[0] for t in items]
+    nfas: list[Nfa] = []
+    for mayb_tree in children:
+        while isinstance(mayb_tree, Tree):
+            assert len(mayb_tree.children) == 1
+            mayb_tree = mayb_tree.children[0]
+        nfas.append(mayb_tree)
+    return nfas
+
+
 class RegexParser(Transformer):
     def regex_kleene(self, items: list[Tree[Nfa]]) -> Nfa:
         assert len(items) == 1
-        sub_nfa_child = items[0].children
-        assert len(sub_nfa_child) == 1
-        sub_nfa_mayb_tree = sub_nfa_child[0]
-        while isinstance(sub_nfa_mayb_tree, Tree):
-            sub_nfa_mayb_tree = sub_nfa_mayb_tree.children[0]
-        sub_nfa: Nfa = sub_nfa_mayb_tree
+        sub_nfa = nodes_to_nfas(*items)[0]
         assert len(sub_nfa.final_set) == 1
+
         sub_nfa_end = sub_nfa.final_set.pop()
         new_start = fresh_state()
         new_end = fresh_state()
+
         trans_fn = sub_nfa.trans_fn.copy()
         trans_fn.update({(new_start, ""): set([new_end, sub_nfa.start])})
         trans_fn.update({(sub_nfa_end, ""): set([sub_nfa.start, new_end])})
@@ -85,21 +93,13 @@ class RegexParser(Transformer):
 
     def regex_concat(self, items: list[Tree[Nfa]]) -> Nfa:
         assert len(items) == 2
-        left_child, right_child = [t.children for t in items]
-        assert len(left_child) == 1
-        assert len(right_child) == 1
-        left_mayb_tree = left_child[0]
-        while isinstance(left_mayb_tree, Tree):
-            left_mayb_tree = left_mayb_tree.children[0]
-        left: Nfa = left_mayb_tree
-        right_mayb_tree = right_child[0]
-        while isinstance(right_mayb_tree, Tree):
-            right_mayb_tree = right_mayb_tree.children[0]
-        right: Nfa = right_mayb_tree
+        left, right = nodes_to_nfas(*items)
         assert len(left.final_set) == 1
         assert len(right.final_set) == 1
+
         new_start = fresh_state()
         new_end = fresh_state()
+
         trans_fn = left.trans_fn.copy()
         trans_fn.update(right.trans_fn)
         trans_fn.update({(new_start, ""): set([left.start])})
@@ -116,21 +116,16 @@ class RegexParser(Transformer):
 
     def regex_or(self, items: list[Tree[Nfa]]) -> Nfa:
         assert len(items) == 2
-        left_child, right_child = [t.children for t in items]
-        assert len(left_child) == 1
-        assert len(right_child) == 1
-        left_mayb_tree = left_child[0]
-        while isinstance(left_mayb_tree, Tree):
-            left_mayb_tree = left_mayb_tree.children[0]
-        left: Nfa = left_mayb_tree
-        right_mayb_tree = right_child[0]
-        while isinstance(right_mayb_tree, Tree):
-            right_mayb_tree = right_mayb_tree.children[0]
-        right: Nfa = right_mayb_tree
+        left, right = nodes_to_nfas(*items)
         assert len(left.final_set) == 1
         assert len(right.final_set) == 1
+
         new_start = fresh_state()
         new_end = fresh_state()
+        new_state_set = right.state_set.union(left.state_set).union(
+            set({new_start, new_end})
+        )
+
         trans_fn = left.trans_fn.copy()
         trans_fn.update(right.trans_fn)
         trans_fn.update({(new_start, ""): set([right.start, left.start])})
@@ -138,7 +133,7 @@ class RegexParser(Transformer):
         trans_fn.update({(left.final_set.pop(), ""): set([new_end])})
         result = Nfa(
             new_start,
-            right.state_set.union(left.state_set).union(set([new_start, new_end])),
+            new_state_set,
             left.alphabet,
             trans_fn,
             set([new_end]),
