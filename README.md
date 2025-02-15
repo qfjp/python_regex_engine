@@ -55,7 +55,7 @@ this parses a regular expression with the `parser` module. Using
 syntax directed translation, the regular expression is converted to an
 NFA with the following rules:
 
-$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right> \text{ where:}$
+$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right>, \text{ where:}$
 
 * $\mathit q_0$ *is the* start state,
 * $\mathit \Sigma$ *is the* alphabet,
@@ -108,16 +108,16 @@ In the code, these correspond to `parser.RegexParser.primitive`
   * $RS$ *is a regular expression (concatenation). This is handled by
     `parser.RegexParser.regex_concat`*, which constructs the NFA below:
     <p align="center">
-        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_concat.png"/>
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_concat_trans.png"/>
     </p>
   * $R|S$ *is a regular expression (union). This is handled by
     `parser.RegexParser.regex_or`*, which constructs the NFA below:
     <p align="center">
-        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_union.png"/>
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_union_trans.png"/>
     </p>
   * $R^*$ *is a regular expression (kleene star). This is handled by
     `parser.RegexParser.regex_kleene`*, which constructs the following
     NFA:
     <p align="center">
-        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_kleene.png"/>
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_kleene_trans.png"/>
     </p>
