@@ -152,7 +152,7 @@ class Dfa[T]:
         self.start = start
         self.state_set = state_set
         self.alphabet = alphabet
-        self.trans_fn = defaultdict(lambda: Set([0]), trans_fn)
+        self.trans_fn = defaultdict(lambda: Set(0), trans_fn)
         self.final_set = final_set
 
 
