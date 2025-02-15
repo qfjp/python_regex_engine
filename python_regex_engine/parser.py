@@ -141,12 +141,13 @@ class RegexParser(Transformer):
 
     def primitive(self, items: list[Token]) -> Nfa[Sum]:
         # 1 -a-> 2
-        states = [fresh_state(), fresh_state()]
+        start = fresh_state()
+        end = fresh_state()
         char = items[0][0]
         trans_fn: dict[tuple[Sum, str], Set[Sum]] = {
-            (states[0], char): Set({states[1]})
+            (start, char): Set({end})
         }
         result: Nfa[Sum] = Nfa(
-            states[0], Set(states), ALPHABET, trans_fn, Set({states[1]})
+            start, Set({start, end}), ALPHABET, trans_fn, Set({end})
         )
         return result
