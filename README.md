@@ -8,6 +8,7 @@
   - [ ] Equivalence Check
   - [ ] Negation (Depends on $\varepsilon$-NFA $\rightarrow$ DFA)
 * NFA
+  - [ ] **Rename states**
   - [ ] $\varepsilon$-NFA $\rightarrow$ regex
   - [ ] $\varepsilon$-NFA $\rightarrow$ DFA
   - [ ] Optional/low priority
@@ -15,6 +16,7 @@
     + [ ] $\varepsilon$-NFA $\rightarrow$ NFA
     + [ ] Equivalence Check
 * DFA
+  - [ ] **Rename states**
   - [ ] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
   - [ ] Negation
   - [ ] Minimization
@@ -53,13 +55,12 @@ this parses a regular expression with the `parser` module. Using
 syntax directed translation, the regular expression is converted to an
 NFA with the following rules:
 
-$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right>, \text{where:}$
+$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q_0, \Sigma, Q, \delta, F\right> \text{where:}$
 
 * $\mathit q_0$ *is the* start state,
 * $\mathit \Sigma$ *is the* alphabet,
 * $\mathit Q$ *is the* set of states,
-* $\mathit \delta: \mathcal{P}(Q) \times \Sigma \rightarrow \mathcal{P}(Q)$,
-  *is the* transition function,
+* $\mathit \delta: \mathcal{P}(Q) \times \Sigma \rightarrow \mathcal{P}(Q)$ *is the* transition function,
 * *and* $\mathit F$ *is the* set of accepting states.
 
 NFAs are represented with `automata.Nfa`. In the constructor
