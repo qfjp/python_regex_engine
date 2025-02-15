@@ -53,7 +53,7 @@ class Set[T](Monoid):  # type: ignore[no-any-unimported, misc]
         return len(self.value)
 
     def __repr__(self) -> str:
-        return "<{}>".format(self.value)
+        return "{}".format(self.value)
 
     def __eq__(self: Self, other: object) -> bool:
         if isinstance(other, Set):
@@ -80,7 +80,7 @@ class Sum(Monoid[int]):  # type: ignore[no-any-unimported, misc]
         return Sum()
 
     def __repr__(self) -> str:
-        return "<{}>".format(self.value)
+        return "{}".format(self.value)
 
     def __eq__(self: Self, other: object) -> bool:
         if isinstance(other, Sum):
@@ -105,7 +105,7 @@ class Product(Monoid[int]):  # type: ignore[no-any-unimported, misc]
         return Product(1)
 
     def __repr__(self) -> str:
-        return "<{}>".format(self.value)
+        return "{}".format(self.value)
 
     def __eq__(self: Self, other: object) -> bool:
         if isinstance(other, Product):
