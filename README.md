@@ -31,17 +31,15 @@ this parses a regular expression with the `parser` module. Using
 syntax directed translation, the regular expression is converted to an
 NFA with the following rules:
 
-$$
-\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple},
-\left< q_0, \Sigma, Q, \delta, F\right>, \text{where:}
-$$
+$\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple},
+\left< q_0, \Sigma, Q, \delta, F\right>, \text{where:}$
+
   * $q_0$ is the *start state*,
   * $\Sigma$ is the *alphabet*,
   * $Q$ is the *set of states*,
   * $\delta: \mathcal{P}(Q) \times \Sigma \rightarrow \mathcal{P}(Q)$,
     is the *transition function*,
   * and $F$ is the *set of accepting states*.
-$$
 
 NFAs are represented with `automata.Nfa`. In the constructor
 (`automata.Nfa.__init__`) you can see the arguments provided
@@ -73,10 +71,9 @@ visualize the transition function. Letting $\Sigma = \set{a, b, 0}$:
 The test string matches
 ```
 
-\pmb{\textit{Define:}} \textit{A} \text{ regular expression
+$\pmb{\textit{Define:}} \textit{A} \text{ regular expression
 }\textit{(over some alphabet } \Sigma\textit{) is defined recursively
-as follows:}
-$$
+as follows:}$
   * $\emptyset$ is a regular expression matching nothing.
   * $\varepsilon$ is a regular expression matching the empty string,
     i.e. `""`
