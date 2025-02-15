@@ -133,7 +133,7 @@ class Nfa[T]:
             )
         if has_zero:
             result_lst.insert(
-                2, line_format.format(0, *[str(Set(0)) for _ in "ε" + self.alphabet])
+                2, line_format.format(str(Sum(0)), *[str(Set(Sum(0))) for _ in "ε" + self.alphabet])
             )
         return "\n".join(result_lst)
 
