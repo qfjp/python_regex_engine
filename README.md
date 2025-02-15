@@ -84,18 +84,18 @@ In the code, these correspond to `parser.RegexParser.primitive`
 *Let* $R$ & $S$ *be regular expressions:*
   * $RS$ *is a regular expression (concatenation). This is
     `parser.RegexParser.regex_concat`*, which constructs the NFA
-    below: \
-    <div style="text-align": center;">
-    ![regex concat nfa](images/regex_nfa_concat.png)
-    </div>
+    below:
+    <p align="center">
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_concat.png"/>
+    </p>
   * $R|S$ *is a regular expression (union). This is
-    `parser.RegexParser.regex_or`*, which constructs the NFA below: \
-    <div style="text-align": center;">
-    ![regex union nfa](images/regex_nfa_union.png)
-    </div>
+    `parser.RegexParser.regex_or`*, which constructs the NFA below:
+    <p align="center">
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_union.png"/>
+    </p>
   * $R^*$ *is a regular expression (kleene star). This is
     `parser.RegexParser.regex_kleene`*, which constructs the following
-    NFA: \
-    <div style="text-align": center;">
-    ![regex kleene star nfa](images/regex_nfa_kleene.png)
-    </div>
+    NFA:
+    <p align="center">
+        <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_kleene.png"/>
+    </p>
