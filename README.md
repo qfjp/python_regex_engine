@@ -51,8 +51,8 @@ determines if the NFA accepts or not. At some point `regex_reduce`
 will be implemented to convert an NFA back to an equivalent regular expression,
 though not necessarily the same one used to contruct it. If the
 alphabet $\Sigma$ is small, you can also print out the NFA to
-visualize the transition function. Letting $\Sigma = \left\{a, b,
-0\right\}$:
+visualize the transition function. Letting $\Sigma = \set{a, b,
+0}$:
 
 ```
 > python main.py "0|b" "b"
