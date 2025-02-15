@@ -83,8 +83,13 @@ In the code, these correspond to `parser.RegexParser.primitive`
 
 *Let* $R$ & $S$ *be regular expressions:*
   * $RS$ *is a regular expression (concatenation). This is
-    `parser.RegexParser.regex_concat`*
+    `parser.RegexParser.regex_concat`*, which constructs the NFA
+    below:
+    ![regex concat nfa](images/regex_nfa_concat.png)
   * $R|S$ *is a regular expression (union). This is
-    `parser.RegexParser.regex_or`*
+    `parser.RegexParser.regex_or`*, which constructs the NFA below:
+    ![regex union nfa](images/regex_nfa_union.png)
   * $R^*$ *is a regular expression (kleene star). This is
-    `parser.RegexParser.regex_kleene`*
+    `parser.RegexParser.regex_kleene`*, which constructs the following
+    NFA:
+    ![regex kleene star nfa](images/regex_nfa_kleene.png)
