@@ -81,7 +81,7 @@ as follows:}$
     character* $a$
 In the code, these correspond to `parser.RegexParser.primitive`
 
-*Let $R$ & $S$ be regular expressions:*
+*Let* $R$ & $S$ *be regular expressions:*
   * $RS$ *is a regular expression (concatenation). This is
     `parser.RegexParser.regex_concat`*
   * $R|S$ *is a regular expression (union). This is
