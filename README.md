@@ -104,18 +104,17 @@ as follows:}$
 In the code, these correspond to `parser.RegexParser.primitive`
 
 *Let* $R$ & $S$ *be regular expressions:*
-  * $RS$ *is a regular expression (concatenation). This is
-    `parser.RegexParser.regex_concat`*, which constructs the NFA
-    below:
+  * $RS$ *is a regular expression (concatenation). This is handled by
+    `parser.RegexParser.regex_concat`*, which constructs the NFA below:
     <p align="center">
         <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_concat.png"/>
     </p>
-  * $R|S$ *is a regular expression (union). This is
+  * $R|S$ *is a regular expression (union). This is handled by
     `parser.RegexParser.regex_or`*, which constructs the NFA below:
     <p align="center">
         <img src="https://raw.githubusercontent.com/qfjp/python_regex_engine/refs/heads/main/images/regex_nfa_union.png"/>
     </p>
-  * $R^*$ *is a regular expression (kleene star). This is
+  * $R^*$ *is a regular expression (kleene star). This is handled by
     `parser.RegexParser.regex_kleene`*, which constructs the following
     NFA:
     <p align="center">
