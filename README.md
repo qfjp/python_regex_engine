@@ -60,7 +60,7 @@ $\pmb{\textit{Define:}} \textit{An } \text{NFA} \textit{ is a 5-tuple}, \left< q
 * $\mathit q_0$ *is the* start state,
 * $\mathit \Sigma$ *is the* alphabet,
 * $\mathit Q$ *is the* set of states,
-* $\mathit \delta: \mathcal{P}(Q) \times \Sigma \rightarrow \mathcal{P}(Q)$ *is the* transition function,
+* $\mathit \delta: Q \times \Sigma \rightarrow \mathcal{P}(Q)$ *is the* transition function,
 * *and* $\mathit F$ *is the* set of accepting states.
 
 NFAs are represented with `automata.Nfa`. In the constructor
