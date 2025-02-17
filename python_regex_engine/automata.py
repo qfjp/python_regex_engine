@@ -72,7 +72,10 @@ class Nfa[T]:
         visited: Set[State[T]] = Set()
         while len(stack) != 0:
             state = stack.pop()
-            result.add(state)
+            if state in self.state_set:  # Should only be triggered if state == ∅
+                result.add(state)
+            else:
+                continue
             if state not in visited:
                 stack = stack.union(self.trans_fn[(state, "")])
             visited.add(state)
@@ -100,14 +103,15 @@ class Nfa[T]:
 
     def __str__(self) -> str:
 
-        longest_state_set_name_len = max(
+        longest_state_or_set_name_len = max(
             [len(str(self.eps_close(val))) for val in self.trans_fn.values()]
+            + [len(str(state)) for state in self.state_set]
         )
 
         # Make room for start and final annotations
-        first_format = "{:>" + str(longest_state_set_name_len + 3) + "} | "
+        first_format = "{:>" + str(longest_state_or_set_name_len + 3) + "} | "
         # The rest are sized smaller
-        format = "{:>" + str(longest_state_set_name_len) + "} | "
+        format = "{:>" + str(longest_state_or_set_name_len) + "} | "
 
         line_formats = [format for _ in "ε" + self.alphabet[1:]]
         line_formats.insert(0, format)
