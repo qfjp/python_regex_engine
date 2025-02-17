@@ -31,16 +31,24 @@ class Nfa[T]:
         self.trans_fn = defaultdict(lambda: Set({start.identity_element()}), trans_fn)
         self.final_set = final_set
 
+        # defaultdict is used, so calculating values will fill in
+        # missing items. We need ε's and ε-closures
+        _ = [self.trans_fn[(state, "")] for state in self.state_set]
+        _ = [self.eps_close(val) for val in list(self.trans_fn.values())]
+        visible_states: Set[T] = Set().union(*list(self.trans_fn.values()))
+        if (
+            start.identity_element() in visible_states
+            and start.identity_element() not in state_set
+        ):
+            self.state_set = self.state_set.union(Set({start.identity_element()}))
+        assert self.state_set.issuperset(visible_states)
+
     def delta(self, state: State[T], char: str) -> Set[State[T]]:
         char = "" if char == "ε" else char
-        try:
-            possibilities = [
-                self.trans_fn[(state_p, char)]
-                for state_p in self.eps_close(Set({state}))
-            ]
-            return self.eps_close(Set().union(*possibilities))
-        except KeyError:
-            return Set({state.identity_element()})
+        possibilities = [
+            self.trans_fn[(state_p, char)] for state_p in self.eps_close(Set({state}))
+        ]
+        return self.eps_close(Set().union(*possibilities))
 
     def delta_sets(self, cur_states: Set[State[T]], char: str) -> Set[State[T]]:
         init: set[int] = Set()
@@ -91,8 +99,6 @@ class Nfa[T]:
         return ""
 
     def __str__(self) -> str:
-        # Just calculating the epsilon closures fills in the values
-        _ = [self.eps_close(val) for val in list(self.trans_fn.values())]
 
         longest_state_set_name_len = max(
             [len(str(self.eps_close(val))) for val in self.trans_fn.values()]
@@ -121,19 +127,12 @@ class Nfa[T]:
         pipe_lengths.append(len(result_lst[0]) - len(sep_string))
         result_lst.append("+".join(["-" * p for p in pipe_lengths]))
 
-        has_zero = False  # Just in case we need a null state
         for state in self.state_set:
             transitions = [self.delta(state, char) for char in "ε" + self.alphabet]
-            if Set(0) in transitions:
-                has_zero = True
             state_str = state if state not in self.final_set else "*{}".format(state)
             state_str = state_str if state != self.start else "->{}".format(state_str)
             result_lst.append(
                 line_format.format(state_str, *[str(x) for x in transitions])
-            )
-        if has_zero:
-            result_lst.insert(
-                2, line_format.format(str(Sum(0)), *[str(Set(Sum(0))) for _ in "ε" + self.alphabet])
             )
         return "\n".join(result_lst)
 
