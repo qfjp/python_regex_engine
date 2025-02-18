@@ -14,15 +14,15 @@
   - [ ] Optional/low priority
     + [ ] Parse
     + [ ] $\varepsilon$-NFA $\rightarrow$ NFA
-    + [ ] Equivalence Check
+    + [X] Equivalence Check
 * DFA
-  - [ ] **Rename states**
+  - [X] **Rename states**
   - [X] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
   - [ ] Negation
-  - [ ] Minimization
+  - [X] Minimization
   - [ ] Optional/low priority
     + [ ] Parse
-    + [ ] Equivalence Check
+    + [X] Equivalence Check
 
 ## Install & Run
 
