@@ -25,22 +25,22 @@ class Set[T](Monoid):  # type: ignore[no-any-unimported, misc]
             return self.value.issuperset(other)
         return self.value.issuperset(other.value)
 
-    def intersection(self: Self, other: Self) -> "Set[T]":
+    def intersection(self: Self, other: Self) -> Self:
         return Set(self.value.intersection(other.value))
 
-    def addition_operation(self: Self, other: Self) -> "Set[T]":
+    def addition_operation(self: Self, other: Self) -> Self:
         return Set(self.value.union(other.value))
 
-    def union(self: Self, *others: Self) -> "Set[T]":
+    def union(self: Self, *others: Self) -> Self:
         result: Set[T] = self
         for other in others:
             result += result + other
         return result
 
-    def identity_element(self) -> "Set[T]":
+    def identity_element(self) -> Self:
         return Set()
 
-    def copy(self) -> "Set[T]":
+    def copy(self) -> Self:
         return Set(self.value.copy())
 
     def pop(self) -> T:
@@ -93,9 +93,9 @@ class Sum(Monoid[int]):  # type: ignore[no-any-unimported, misc]
     def __format__(self, format_spec: str) -> str:
         return ("{:" + format_spec + "}").format(str(self))
 
-    def addition_operation(self: Self, other: Self | int) -> "Sum":
+    def addition_operation(self: Self, other: Self | int) -> Self:
         if isinstance(other, int):
-            return self + Sum(other)
+            return self + Sum(other)  # type: ignore[no-any-return]
         return Sum(self.value + other.value)
 
     def identity_element(self) -> "Sum":
@@ -120,10 +120,10 @@ class Product(Monoid[int]):  # type: ignore[no-any-unimported, misc]
         self.value = val
         self.__iadd__ = self.__add__
 
-    def addition_operation(self: Self, other: Self) -> "Product":
+    def addition_operation(self: Self, other: Self) -> Self:
         return Product(self.value * other.value)
 
-    def identity_element(self) -> "Product":
+    def identity_element(cls) -> Self:
         return Product(1)
 
     def __repr__(self) -> str:
