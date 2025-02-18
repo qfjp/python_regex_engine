@@ -159,21 +159,7 @@ class Dfa[T]:
         self.final_set = final_set
 
 
-def tests() -> None:
-    trans_fn: dict[tuple[Sum, str], Set[Sum]] = {
-        (Sum(1), "a"): Set(Sum(1)),
-        (Sum(1), "b"): Set(Sum(1)),
-        (Sum(1), "c"): Set(Sum(1)),
-    }
-    nfa: Nfa[Sum] = Nfa(1, Set({1, 2, 3}), "abc", trans_fn, Set(1))
-    print(nfa.delta_sets(Set({1, 2}), "a"))
-    print(nfa.accepts("abca"))
-    nfa.regex_reduce()
-    print(nfa)
 
 
-def main() -> None:
-    tests()
 
 
-# main()
