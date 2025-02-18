@@ -167,7 +167,7 @@ class Nfa[T]:
 
         for state in self.state_set:
             transitions = [self.delta(state, char) for char in "ε" + self.alphabet]
-            state_str = state if state not in self.final_set else "*{}".format(state)
+            state_str = str(state) if state not in self.final_set else "*{}".format(state)
             state_str = state_str if state != self.start else "->{}".format(state_str)
             result_lst.append(
                 line_format.format(state_str, *[str(x) for x in transitions])
@@ -284,7 +284,7 @@ class Dfa[T]:
 
         for state in self.state_set:
             transitions = [self.delta(state, char) for char in self.alphabet]
-            state_str = state if state not in self.final_set else "*{}".format(state)
+            state_str = str(state) if state not in self.final_set else "*{}".format(state)
             state_str = state_str if state != self.start else "->{}".format(state_str)
             result_lst.append(
                 line_format.format(state_str, *[str(x) for x in transitions])
