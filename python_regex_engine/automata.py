@@ -13,8 +13,6 @@ State: TypeAlias = Monoid[T]  # type: ignore[no-any-unimported]
 
 
 class Nfa[T]:
-    # State is for states, U is for alphabet
-    # An NFA is a 5-tuple: (q_0, Q, Σ, δ, F)
     def __init__(
         self,
         start: State[T],
@@ -23,6 +21,7 @@ class Nfa[T]:
         trans_fn: dict[tuple[State[T], str], Set[State[T]]],
         final_set: Set[State[T]],
     ):
+        """An NFA is a 5-tuple: (q_0, Q, Σ, δ, F)."""
         assert state_set.issuperset(final_set)
         assert start in state_set
         self.start = start
@@ -102,6 +101,9 @@ class Nfa[T]:
         return ""
 
     def __str__(self) -> str:
+        """
+        TODO: This can certainly be simplified with Dfa.__str__
+        """
 
         longest_state_or_set_name_len = max(
             [len(str(self.eps_close(val))) for val in self.trans_fn.values()]
