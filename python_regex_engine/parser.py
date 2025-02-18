@@ -144,10 +144,6 @@ class RegexParser(Transformer):
         start = fresh_state()
         end = fresh_state()
         char = items[0][0]
-        trans_fn: dict[tuple[Sum, str], Set[Sum]] = {
-            (start, char): Set({end})
-        }
-        result: Nfa[Sum] = Nfa(
-            start, Set({start, end}), ALPHABET, trans_fn, Set({end})
-        )
+        trans_fn: dict[tuple[Sum, str], Set[Sum]] = {(start, char): Set({end})}
+        result: Nfa[Sum] = Nfa(start, Set({start, end}), ALPHABET, trans_fn, Set({end}))
         return result
