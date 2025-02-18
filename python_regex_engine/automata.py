@@ -57,14 +57,14 @@ class Nfa[T]:
         possibilities = [self.delta(state, char) for state in cur_states]
         return self.eps_close(Set().union(*possibilities))
 
-    def delta_star(self, input: str) -> Set[State[T]]:
-        cur_state_set = self.eps_close(Set([self.start]))
+    def delta_star(self, state: State[T], input: str) -> Set[State[T]]:
+        cur_state_set = self.eps_close(Set([state]))
         for char in input:
             cur_state_set = self.delta_sets(cur_state_set, char)
         return self.eps_close(cur_state_set)
 
     def accepts(self, input: str) -> bool:
-        return self.delta_star(input).intersection(self.final_set) != Set()
+        return self.delta_star(self.start, input).intersection(self.final_set) != Set()
 
     def eps_close(self, states: Set[State[T]]) -> Set[State[T]]:
         stack = states.copy()
