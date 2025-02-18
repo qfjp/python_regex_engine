@@ -132,6 +132,18 @@ class Nfa[T]:
         print(clean_nfa)
         return ""
 
+    def __eq__(self, other: object) -> bool:
+        """
+        Equivalence is checked by converting to DFAs
+        and checking using the symmetric difference
+        """
+        if not isinstance(other, Nfa):
+            return False
+        if self.alphabet != other.alphabet:
+            return False
+        return self.to_dfa() == other.to_dfa()
+        pass
+
     def __str__(self) -> str:
         """
         TODO: This can certainly be simplified with Dfa.__str__
@@ -314,6 +326,55 @@ class Dfa[T]:
         }
         new_finals: State[int] = Set([new_names[i] for i in self.final_set])
         return Dfa(new_start, new_states, self.alphabet, new_trans_fn, new_finals)
+
+    def __eq__(self: Self, other: object) -> bool:
+        """
+        We can verify equality using the symmetric difference:
+            A△ B = (A - B) ∪ (B - A)
+        The symmetric difference of the languages of the two DFAs
+        is empty iff the two DFAs are equivalent. This can be
+        checked by doing a depth/breadth first search on the product
+        construction; if no final states are found then the DFAs are
+        equivalent.
+        """
+        if not isinstance(other, Dfa):
+            return False
+        if self.alphabet != other.alphabet:
+            return False
+        # Instead of doing a depth/breadth first search, just
+        # construct the product and minimize.
+        new_start = (self.start, other.start)
+        new_finals: Set[tuple[State[T], State[T]]] = Set(
+            [
+                (f1, s2)  # type: ignore[arg-type]
+                for f1 in self.final_set
+                for s2 in other.state_set - other.final_set
+            ]
+        ) + Set(
+            [  # type: ignore[arg-type]
+                (s1, f2)
+                for s1 in self.state_set - self.final_set
+                for f2 in other.final_set
+            ]
+        )
+        new_state_set: Set[tuple[State[T], State[T]]] = Set(
+            [(s1, s2) for s1 in self.state_set for s2 in other.state_set]
+        )
+        new_trans: dict[
+            tuple[tuple[State[T], State[T]], str], tuple[State[T], State[T]]
+        ] = {
+            ((s1, s2), char): (self.delta(s1, char), other.delta(s2, char))
+            for s1 in self.state_set
+            for s2 in other.state_set
+            for char in self.alphabet
+        }
+        sym_diff: Dfa[tuple[State[T], State[T]]] = Dfa(
+            new_start, new_state_set, self.alphabet, new_trans, new_finals
+        ).minimize()
+        # If the symmetric difference has one state and it is
+        # non-accepting, then the language of the symmetric difference
+        # is empty and the DFAs are the same
+        return len(sym_diff.state_set) == 1 and len(sym_diff.final_set) == 0
 
     def __neg__(self) -> "Dfa[T]":
         """
