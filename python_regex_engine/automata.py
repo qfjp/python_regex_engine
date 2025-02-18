@@ -241,6 +241,80 @@ class Dfa[T]:
                 self.trans_fn.pop((state, char))
         self.final_set = self.final_set.intersection(self.state_set)
 
+    def minimize(self) -> "Dfa[T]":
+        distinguishable_matrix: dict[tuple[State[T], State[T]], bool] = dict()
+        state_list = list(self.state_set)
+        for state_i in state_list:
+            for state_j in state_list[0 : state_list.index(state_i)]:
+                i_in_final = state_i in self.final_set
+                j_in_final = state_j in self.final_set
+                init_dist = (i_in_final and not j_in_final) or (
+                    j_in_final and not i_in_final
+                )
+                distinguishable_matrix[(state_i, state_j)] = init_dist
+
+        def distinguishable(state_i: State[T], state_j: State[T]) -> bool:
+            if state_i == state_j:
+                return False
+            try:
+                return distinguishable_matrix[(state_i, state_j)]
+            except KeyError:
+                return distinguishable_matrix[(state_j, state_i)]
+
+        changed = True
+        while changed:
+            changed = False
+            for state_i, state_j in distinguishable_matrix:
+                if distinguishable(state_i, state_j) or state_i == state_j:
+                    continue
+                for char in self.alphabet:
+                    if distinguishable(
+                        self.delta(state_i, char), self.delta(state_j, char)
+                    ):
+                        try:
+                            distinguishable_matrix[(state_i, state_j)]
+                            distinguishable_matrix[(state_i, state_j)] = True
+                        except KeyError:
+                            distinguishable_matrix[(state_j, state_i)] = True
+                        changed = True
+        rename = {i: i for i in self.state_set}
+        rename.update(
+            {
+                i: j
+                for i, j in distinguishable_matrix
+                if not distinguishable_matrix[i, j]
+            }
+        )
+        # The above can't handle 3 or more states equivalent
+        # to each other, so we need to recursively set the renaming
+        # dictionary
+        for key in rename:
+            prev_val = key
+            cur_val = rename[key]
+            while prev_val != cur_val:
+                prev_val = cur_val
+                cur_val = rename[cur_val]
+            rename[key] = cur_val
+
+        new_start = rename[self.start]
+        new_trans_fn = {
+            (rename[i], c): rename[self.delta(i, c)] for i, c in self.trans_fn
+        }
+        new_states = Set([rename[i] for i in self.state_set])
+        new_finals = Set([rename[i] for i in self.final_set])
+
+        return Dfa(new_start, new_states, self.alphabet, new_trans_fn, new_finals)
+
+    def reindex(self) -> "Dfa[int]":
+        new_names = {state: i for i, state in enumerate(self.state_set)}
+        new_start = new_names[self.start]
+        new_states: State[int] = Set([new_names[state] for state in self.state_set])
+        new_trans_fn = {
+            (new_names[i], c): new_names[self.delta(i, c)] for i, c in self.trans_fn
+        }
+        new_finals: State[int] = Set([new_names[i] for i in self.final_set])
+        return Dfa(new_start, new_states, self.alphabet, new_trans_fn, new_finals)
+
     def __neg__(self) -> "Dfa[T]":
         """
         Negating a DFA is just swapping final states to nonfinal and vice versa.
