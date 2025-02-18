@@ -62,6 +62,8 @@ class Set[T](Monoid):  # type: ignore[no-any-unimported, misc]
         return ("{:" + format_spec + "}").format(str(self))
 
     def __repr__(self) -> str:
+        if len(self.value) == 0:
+            return "∅"
         return "{}".format(self.value)
 
     def __eq__(self: Self, other: object) -> bool:
