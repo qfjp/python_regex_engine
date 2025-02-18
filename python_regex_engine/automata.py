@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import TypeAlias, TypeVar
+from typing import TypeAlias, TypeVar, Self
 
 from pymonad.monoid import Monoid  # type: ignore[import-untyped]
 
@@ -201,6 +201,8 @@ class Dfa[T]:
         self.trans_fn = trans_fn
         self.final_set = final_set
 
+        self._remove_unreachable()
+
         # A plain dict is used, as a DFA must be complete on
         # initialization
         visible_states: Set[T] = Set(list(self.trans_fn.values()))
@@ -221,6 +223,35 @@ class Dfa[T]:
 
     def accepts(self, input: str) -> bool:
         return self.delta_star(self.start, input) in self.final_set
+
+    def _remove_unreachable(self) -> None:
+        visited: Set[State[T]] = Set()
+        state_stack = Set({self.start})
+        while len(state_stack) > 0:
+            cur_state = state_stack.pop()
+            if cur_state in visited:
+                continue
+            visited.add(cur_state)
+            for char in self.alphabet:
+                state_stack.add(self.delta(cur_state, char))
+        unreachables = self.state_set - visited
+        self.state_set = visited
+        for state in unreachables:
+            for char in self.alphabet:
+                self.trans_fn.pop((state, char))
+        self.final_set = self.final_set.intersection(self.state_set)
+
+    def __neg__(self) -> "Dfa[T]":
+        """
+        Negating a DFA is just swapping final states to nonfinal and vice versa.
+        """
+        return Dfa(
+            self.start,
+            self.state_set,
+            self.alphabet,
+            self.trans_fn,
+            self.state_set - self.final_set,
+        )
 
     def __str__(self) -> str:
         """
