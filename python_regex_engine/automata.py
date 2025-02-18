@@ -3,7 +3,7 @@ from typing import TypeAlias, TypeVar, Self
 
 from pymonad.monoid import Monoid  # type: ignore[import-untyped]
 
-from python_regex_engine.monoids import Set, Sum
+from python_regex_engine.monoids import Set
 
 # ALPHABET = string.printable
 ALPHABET = "ab0"
