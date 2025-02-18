@@ -30,9 +30,20 @@ def main() -> None:
     print(result)
     print()
     print(
-        "The test string matches"
+        "The test string matches (NFA)"
         if result.accepts(test_str)
-        else "The test string doesn't match"
+        else "The test string doesn't match (NFA)"
+    )
+    print()
+    dfa = result.to_dfa()
+    print("DFA")
+    print("===")
+    print(dfa)
+    print()
+    print(
+        "The test string matches (DFA)"
+        if dfa.accepts(test_str)
+        else "The test string doesn't match (DFA)"
     )
 
 

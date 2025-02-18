@@ -80,6 +80,38 @@ class Nfa[T]:
             visited.add(state)
         return result
 
+    def to_dfa(self) -> "Dfa[Set[T]]":
+        new_states: Set[Set[T]] = Set()
+        new_start = self.eps_close(Set(self.start))
+        state_stack: Set[Set[T]] = Set({Set(), new_start})
+        while len(state_stack) != 0:
+            cur_state = state_stack.pop()
+            new_states.add(cur_state)
+            for char in self.alphabet:
+                child_state = self.eps_close(self.delta_sets(cur_state, char))
+                if child_state not in new_states:
+                    state_stack.add(child_state)
+        nested_transition_keys = [
+            [(state, char) for char in self.alphabet] for state in new_states
+        ]
+        transition_keys = [
+            state_and_char
+            for sublist in nested_transition_keys
+            for state_and_char in sublist
+        ]
+        new_trans_fn: dict[tuple[Set[T], str], Set[Set[T]]] = {
+            (state, char): self.delta_sets(state, char)
+            for state, char in transition_keys
+        }
+        new_finals: Set[Set[T]] = Set(
+            {
+                state
+                for state in new_states
+                if state.intersection(self.final_set) != Set()
+            }
+        )
+        return Dfa(new_start, new_states, self.alphabet, new_trans_fn, new_finals)
+
     def regex_reduce(self) -> str:
         new_start = "start"
         new_end = "fin"
@@ -149,19 +181,81 @@ class Dfa[T]:
         start: State[T],
         state_set: Set[State[T]],
         alphabet: str,
-        trans_fn: dict[tuple[State[T], str], Set[State[T]]],
-        final_set: set[State[T]],
+        trans_fn: dict[tuple[State[T], str], State[T]],
+        final_set: Set[State[T]],
     ):
+        """
+        A DFA is a 5-tuple: (q_0, Q, Σ, δ, F).
+
+        The primary definitional difference between
+        DFA's and NFA's is that in an NFA, Im(δ): Set[T],
+        while for a DFA Im(δ): T
+
+        We can't use inheritance because of the types :-(
+        """
         assert state_set.issuperset(final_set)
         assert start in state_set
         self.start = start
         self.state_set = state_set
         self.alphabet = alphabet
-        self.trans_fn = defaultdict(lambda: Set(0), trans_fn)
+        self.trans_fn = trans_fn
         self.final_set = final_set
 
+        # A plain dict is used, as a DFA must be complete on
+        # initialization
+        visible_states: Set[T] = Set(list(self.trans_fn.values()))
+        assert self.state_set.issuperset(visible_states)
 
+    def delta(self, state: State[T], char: str) -> State[T]:
+        """
+        DFAs don't have ε transitions, so this is a straightforward
+        dict -> function
+        """
+        return self.trans_fn[state, char]
 
+    def delta_star(self, state: State[T], input: str) -> State[T]:
+        cur_state = state
+        for char in input:
+            cur_state = self.delta(cur_state, char)
+        return cur_state
 
+    def accepts(self, input: str) -> bool:
+        return self.delta_star(self.start, input) in self.final_set
 
+    def __str__(self) -> str:
+        """
+        TODO: This can certainly be simplified with Nfa.__str__
+        """
+        longest_state_name_len = max([len(str(val)) for val in self.state_set])
 
+        # Make room for start and final annotations
+        first_format = "{:>" + str(longest_state_name_len + 3) + "} | "
+        # The rest are sized smaller
+        format = "{:>" + str(longest_state_name_len) + "} | "
+
+        line_formats = [format for _ in self.alphabet[1:]]
+        line_formats.insert(0, format)
+        line_formats.insert(0, first_format)
+        line_format = "".join(line_formats)[:-3]
+
+        # Build the return values
+        result_lst = [line_format.format("", *self.alphabet)]
+
+        pipe_lengths = []  # To find where to put "+" in separator
+        prev_i = -1
+        for i, x in enumerate(result_lst[0]):
+            if x == "|":
+                pipe_lengths.append((i - 1) - prev_i)
+                prev_i = i
+        sep_string = "+".join(["-" * p for p in pipe_lengths])
+        pipe_lengths.append(len(result_lst[0]) - len(sep_string))
+        result_lst.append("+".join(["-" * p for p in pipe_lengths]))
+
+        for state in self.state_set:
+            transitions = [self.delta(state, char) for char in self.alphabet]
+            state_str = state if state not in self.final_set else "*{}".format(state)
+            state_str = state_str if state != self.start else "->{}".format(state_str)
+            result_lst.append(
+                line_format.format(state_str, *[str(x) for x in transitions])
+            )
+        return "\n".join(result_lst)

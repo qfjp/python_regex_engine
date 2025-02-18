@@ -10,14 +10,14 @@
 * NFA
   - [ ] **Rename states**
   - [ ] $\varepsilon$-NFA $\rightarrow$ regex
-  - [ ] $\varepsilon$-NFA $\rightarrow$ DFA
+  - [X] $\varepsilon$-NFA $\rightarrow$ DFA
   - [ ] Optional/low priority
     + [ ] Parse
     + [ ] $\varepsilon$-NFA $\rightarrow$ NFA
     + [ ] Equivalence Check
 * DFA
   - [ ] **Rename states**
-  - [ ] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
+  - [X] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
   - [ ] Negation
   - [ ] Minimization
   - [ ] Optional/low priority
