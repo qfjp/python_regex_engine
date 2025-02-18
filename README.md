@@ -18,11 +18,21 @@
 * DFA
   - [X] **Rename states**
   - [X] Set of states reduction ($\varepsilon$-NFA $\rightarrow$ DFA)
-  - [ ] Negation
+  - [X] Negation
   - [X] Minimization
   - [ ] Optional/low priority
     + [ ] Parse
     + [X] Equivalence Check
+* Unit Tests
+  - [ ] Regex
+    + [ ] Negation
+  - [ ] NFA
+    + Regex -> NFA
+  - [ ] DFA
+    + [ ] NFA -> DFA
+    + [ ] Negation
+    + [ ] Equivalence
+    + [ ] Minimization Equivalence
 
 ## Install & Run
 
