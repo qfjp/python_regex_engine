@@ -35,7 +35,9 @@ def main() -> None:
         else "The test string doesn't match (NFA)"
     )
     print()
-    dfa = result.to_dfa()
+    dfa_large = result.to_dfa()
+    dfa = dfa_large.minimize().reindex()
+    assert dfa_large == dfa
     print("DFA")
     print("===")
     print(dfa)
@@ -45,6 +47,17 @@ def main() -> None:
         if dfa.accepts(test_str)
         else "The test string doesn't match (DFA)"
     )
+    alph = "0ab"
+    none = [""]
+    one = [a for a in alph]
+    two = [a + b for a in alph for b in alph]
+    three = [a + b + c for a in alph for b in alph for c in alph]
+    four = [a + b + c + d for a in alph for b in alph for c in alph for d in alph]
+    for string in none + one + two + three + four:
+        if dfa.accepts(string) != result.accepts(string):
+            print(string)
+        if dfa.accepts(string) == (-dfa).accepts(string):
+            print(string)
 
 
 if __name__ == "__main__":
