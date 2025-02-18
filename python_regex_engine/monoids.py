@@ -12,6 +12,9 @@ class Set[T](Monoid):  # type: ignore[no-any-unimported, misc]
             self.value = {val}
         self.__iadd__ = self.__add__
 
+    def discard(self, item: T) -> None:
+        self.val.discard(item)
+
     def issubset(self, other: Self | set[T]) -> bool:
         if isinstance(other, set):
             return self.value.issubset(other)
